@@ -122,14 +122,14 @@ async def admin_login(
         )
     
     # Разрешаем вход админам, диспетчерам и суперадминам
-    # Приводим к строке и нижнему регистру для надежности (если в БД записано капсом)
-    role_str = str(user.role).lower() if user.role else ""
-    allowed_roles = [r.value for r in [UserRole.ADMIN, UserRole.DISPATCHER, UserRole.SUPER_ADMIN]]
+    # Используем .value для надежного сравнения значений Enum
+    user_role_val = user.role.value if hasattr(user.role, 'value') else str(user.role).lower()
+    allowed_roles = [UserRole.ADMIN.value, UserRole.DISPATCHER.value, UserRole.SUPER_ADMIN.value]
     
-    if role_str not in allowed_roles:
+    if user_role_val not in allowed_roles:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Доступ разрешён только сотрудникам УК (Ваша роль: {user.role})"
+            detail=f"Доступ разрешён только сотрудникам УК (Ваша роль: {user_role_val})"
         )
     
     access_token = create_access_token({"telegram_id": telegram_id})
