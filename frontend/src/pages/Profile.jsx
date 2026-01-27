@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 import { companiesApi, housesApi } from '../api/client'
 import Header from '../components/layout/Header'
 
 export default function Profile() {
+    const navigate = useNavigate()
     const { user, updateProfile, logout } = useAuth()
+    const { theme, setTheme } = useTheme()
     const [companies, setCompanies] = useState([])
     const [houses, setHouses] = useState([])
     const [selectedCompany, setSelectedCompany] = useState('')
@@ -76,7 +80,10 @@ export default function Profile() {
                 phone: phone.trim() || null
             })
             setSaved(true)
-            setTimeout(() => setSaved(false), 3000)
+            setTimeout(() => {
+                setSaved(false)
+                navigate('/')
+            }, 1000)
         } catch (err) {
             alert(err.response?.data?.detail || 'Ошибка сохранения')
         } finally {
@@ -192,6 +199,30 @@ export default function Profile() {
                         </div>
                     </div>
 
+
+                    <div className="card" style={{ marginBottom: '16px' }}>
+                        <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>
+                            Внешний вид
+                        </h3>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            {[
+                                { id: 'light', label: 'Светлая', icon: '☀️' },
+                                { id: 'dark', label: 'Тёмная', icon: '🌙' },
+                                { id: 'system', label: 'Системная', icon: '⚙️' }
+                            ].map(t => (
+                                <button
+                                    key={t.id}
+                                    type="button"
+                                    className={`btn ${theme === t.id ? 'btn-primary' : 'btn-secondary'}`}
+                                    onClick={() => setTheme(t.id)}
+                                    style={{ flex: 1, padding: '10px', fontSize: '13px' }}
+                                >
+                                    {t.icon} {t.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     <button
                         type="submit"
                         className="btn btn-primary btn-block"
@@ -209,7 +240,7 @@ export default function Profile() {
                 >
                     Выйти из аккаунта
                 </button>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }

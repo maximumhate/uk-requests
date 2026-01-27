@@ -13,6 +13,7 @@ class RequestStatus(str, enum.Enum):
     COMPLETED = "completed"      # Выполнена
     REJECTED = "rejected"        # Отклонена
     REOPENED = "reopened"        # Открыта повторно
+    CANCELLED = "cancelled"      # Отменена
 
 
 class RequestCategory(str, enum.Enum):
@@ -29,13 +30,14 @@ class RequestCategory(str, enum.Enum):
 
 # FSM: допустимые переходы статусов
 STATUS_TRANSITIONS = {
-    RequestStatus.NEW: [RequestStatus.ACCEPTED, RequestStatus.REJECTED],
-    RequestStatus.ACCEPTED: [RequestStatus.IN_PROGRESS, RequestStatus.REJECTED, RequestStatus.ON_HOLD],
-    RequestStatus.IN_PROGRESS: [RequestStatus.COMPLETED, RequestStatus.ON_HOLD],
-    RequestStatus.ON_HOLD: [RequestStatus.IN_PROGRESS, RequestStatus.REJECTED],
+    RequestStatus.NEW: [RequestStatus.ACCEPTED, RequestStatus.REJECTED, RequestStatus.CANCELLED],
+    RequestStatus.ACCEPTED: [RequestStatus.IN_PROGRESS, RequestStatus.REJECTED, RequestStatus.ON_HOLD, RequestStatus.CANCELLED],
+    RequestStatus.IN_PROGRESS: [RequestStatus.COMPLETED, RequestStatus.ON_HOLD, RequestStatus.CANCELLED],
+    RequestStatus.ON_HOLD: [RequestStatus.IN_PROGRESS, RequestStatus.REJECTED, RequestStatus.CANCELLED],
     RequestStatus.COMPLETED: [RequestStatus.REOPENED],
     RequestStatus.REJECTED: [],
-    RequestStatus.REOPENED: [RequestStatus.ACCEPTED, RequestStatus.REJECTED],
+    RequestStatus.REOPENED: [RequestStatus.ACCEPTED, RequestStatus.REJECTED, RequestStatus.CANCELLED],
+    RequestStatus.CANCELLED: [],
 }
 
 

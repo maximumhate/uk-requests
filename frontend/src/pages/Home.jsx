@@ -11,7 +11,8 @@ const STATUS_LABELS = {
     on_hold: 'Приостановлена',
     completed: 'Выполнена',
     rejected: 'Отклонена',
-    reopened: 'Открыта повторно'
+    reopened: 'Открыта повторно',
+    cancelled: 'Отменена'
 }
 
 const CATEGORY_ICONS = {

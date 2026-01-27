@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import api from '../api/client'
+import { useAuth } from '../context/AuthContext'
 
 const STATUS_LABELS = {
     new: 'Новая',
@@ -8,7 +9,8 @@ const STATUS_LABELS = {
     on_hold: 'Отложена',
     completed: 'Выполнена',
     rejected: 'Отклонена',
-    reopened: 'Открыта повторно'
+    reopened: 'Открыта повторно',
+    cancelled: 'Отменена'
 }
 
 const STATUS_ACTIONS = {
@@ -20,6 +22,7 @@ const STATUS_ACTIONS = {
 }
 
 export default function Requests() {
+    const { user } = useAuth()
     const [requests, setRequests] = useState([])
     const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState('new')
@@ -56,6 +59,17 @@ export default function Requests() {
         }
     }
 
+    const handleCancel = async (requestId) => {
+        if (!confirm('Отменить заявку?')) return
+        try {
+            await api.post(`/superadmin/requests/${requestId}/cancel`)
+            setSelectedRequest(null)
+            loadRequests()
+        } catch (err) {
+            alert(err.response?.data?.detail || 'Ошибка')
+        }
+    }
+
     return (
         <div>
             <div className="page-header">
@@ -68,6 +82,8 @@ export default function Requests() {
                     { value: 'in_progress', label: 'В работе' },
                     { value: 'on_hold', label: 'Отложенные' },
                     { value: 'completed', label: 'Выполненные' },
+                    { value: 'rejected', label: 'Отклоненные' },
+                    { value: 'cancelled', label: 'Отмененные' },
                     { value: 'all', label: 'Все' }
                 ].map(item => (
                     <button
@@ -165,7 +181,7 @@ export default function Requests() {
                             />
                         </div>
 
-                        <div style={{ display: 'flex', gap: 8 }}>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             {STATUS_ACTIONS[selectedRequest.status]?.map(status => (
                                 <button
                                     key={status}
@@ -176,6 +192,16 @@ export default function Requests() {
                                     {STATUS_LABELS[status]}
                                 </button>
                             ))}
+
+                            {user?.role === 'super_admin' && selectedRequest.status !== 'cancelled' && (
+                                <button
+                                    className="btn btn-danger"
+                                    onClick={() => handleCancel(selectedRequest.id)}
+                                    style={{ flex: 1 }}
+                                >
+                                    Отменить (Super Admin)
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -11,7 +11,8 @@ const STATUS_LABELS = {
     on_hold: 'Приостановлена',
     completed: 'Выполнена',
     rejected: 'Отклонена',
-    reopened: 'Открыта повторно'
+    reopened: 'Открыта повторно',
+    cancelled: 'Отменена'
 }
 
 const CATEGORY_LABELS = {
@@ -64,6 +65,19 @@ export default function RequestDetail() {
             await requestsApi.updateStatus(id, {
                 status: 'reopened',
                 comment: 'Заявка переоткрыта пользователем'
+            })
+            loadRequest()
+        } catch (err) {
+            alert(err.response?.data?.detail || 'Ошибка')
+        }
+    }
+
+    const handleCancel = async () => {
+        if (!confirm('Отменить заявку?')) return
+        try {
+            await requestsApi.updateStatus(id, {
+                status: 'cancelled',
+                comment: 'Заявка отменена пользователем'
             })
             loadRequest()
         } catch (err) {
@@ -198,6 +212,16 @@ export default function RequestDetail() {
                         style={{ marginTop: '16px' }}
                     >
                         Переоткрыть заявку
+                    </button>
+                )}
+
+                {['new', 'accepted'].includes(request.status) && request.user_id === user?.id && (
+                    <button
+                        className="btn btn-secondary btn-block"
+                        onClick={handleCancel}
+                        style={{ marginTop: '16px', color: 'var(--color-error)' }}
+                    >
+                        Отменить заявку
                     </button>
                 )}
             </div>

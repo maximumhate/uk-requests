@@ -10,19 +10,30 @@ export default function Sidebar() {
                 <div className="sidebar-logo">🏢 Панель УК</div>
             </div>
 
-            <nav className="sidebar-nav">
-                <NavLink to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <nav style={{ flex: 1 }}>
+                <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                     <span>📊</span> Главная
                 </NavLink>
-                <NavLink to="/requests" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                <NavLink to="/requests" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                     <span>📋</span> Заявки
                 </NavLink>
-                <NavLink to="/companies" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                    <span>🏢</span> УК
-                </NavLink>
-                <NavLink to="/houses" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                    <span>🏠</span> Дома
-                </NavLink>
+
+                {user?.role === 'super_admin' && (
+                    <>
+                        <div style={{ margin: '24px 0 8px 12px', fontSize: '12px', fontWeight: 600, color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>
+                            Супер-админ
+                        </div>
+                        <NavLink to="/companies" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                            <span>🏢</span> Все УК
+                        </NavLink>
+                        <NavLink to="/houses" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                            <span>🏠</span> Все Дома
+                        </NavLink>
+                        <NavLink to="/users" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                            <span>👥</span> Пользователи
+                        </NavLink>
+                    </>
+                )}
             </nav>
 
             <div className="sidebar-footer">

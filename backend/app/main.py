@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 
 from app.config import settings
 from app.database import init_db, AsyncSessionLocal
-from app.routers import auth, companies, houses, requests
+from app.routers import auth, companies, houses, requests, superadmin
 from app.models import Company, House, User, UserRole
 
 
@@ -37,6 +37,7 @@ app.include_router(auth.router, prefix="/api")
 app.include_router(companies.router, prefix="/api")
 app.include_router(houses.router, prefix="/api")
 app.include_router(requests.router, prefix="/api")
+app.include_router(superadmin.router, prefix="/api")
 
 
 @app.get("/")
@@ -117,6 +118,16 @@ async def seed_database():
             company_id=created_companies[0].id
         )
         db.add(dispatcher)
+        
+        # Super Admin
+        super_admin = User(
+            telegram_id=383094701,
+            username="super_admin",
+            first_name="Супер",
+            last_name="Администратор",
+            role=UserRole.SUPER_ADMIN
+        )
+        db.add(super_admin)
         
         await db.commit()
         

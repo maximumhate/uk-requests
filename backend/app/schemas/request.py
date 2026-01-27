@@ -79,4 +79,5 @@ STATUS_LABELS = {
     RequestStatus.COMPLETED: "Выполнена",
     RequestStatus.REJECTED: "Отклонена",
     RequestStatus.REOPENED: "Открыта повторно",
+    RequestStatus.CANCELLED: "Отменена",
 }
