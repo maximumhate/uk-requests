@@ -3,6 +3,10 @@
         {
             "source": "/api/:path*",
             "destination": "${VITE_API_URL}/api/:path*"
+        },
+        {
+            "source": "/((?!assets|favicon).*)",
+            "destination": "/index.html"
         }
     ]
 }
