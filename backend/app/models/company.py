@@ -9,8 +9,9 @@ class Company(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False)
-    phone = Column(String(20), nullable=True)
+    phone = Column(String(255), nullable=True)
     email = Column(String(255), nullable=True)
+    address = Column(String(500), nullable=True)
     description = Column(String(1000), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

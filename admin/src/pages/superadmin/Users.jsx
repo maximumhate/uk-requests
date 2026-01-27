@@ -79,7 +79,8 @@ export default function Users() {
             closeModal()
         } catch (error) {
             console.error('Failed to update user:', error)
-            alert('Ошибка при сохранении')
+            const detail = error.response?.data?.detail
+            alert(`Ошибка при сохранении: ${typeof detail === 'string' ? detail : JSON.stringify(detail) || error.message}`)
         }
     }
 

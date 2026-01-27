@@ -66,7 +66,7 @@ async def list_companies(
             "name": company.name,
             "phone": company.phone,
             "email": company.email,
-            "address": company.address,
+            "address": getattr(company, "address", None), # Safety check
             "house_count": house_count,
             "user_count": user_count,
             "created_at": company.created_at.isoformat() if company.created_at else None
