@@ -3,8 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.config import settings
-from app.database import init_db
+from app.database import init_db, AsyncSessionLocal
 from app.routers import auth, companies, houses, requests
+from app.models import Company, House, User, UserRole
 
 
 @asynccontextmanager
@@ -22,14 +23,10 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS для фронтенда
+# CORS для фронтенда - разрешаем все origins для упрощения
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
-        settings.app_url,
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -54,3 +51,83 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+@app.post("/api/seed")
+async def seed_database():
+    """Заполнить БД тестовыми данными (вызывать один раз!)"""
+    async with AsyncSessionLocal() as db:
+        # Проверяем, есть ли уже данные
+        from sqlalchemy import select
+        result = await db.execute(select(Company))
+        if result.first():
+            return {"status": "already_seeded", "message": "База уже содержит данные"}
+        
+        # Создаем УК
+        companies_data = [
+            {"name": "УК Комфорт", "phone": "+7 (495) 123-45-67", "email": "info@comfort-uk.ru"},
+            {"name": "Жилсервис Плюс", "phone": "+7 (495) 987-65-43", "email": "contact@zhilservice.ru"},
+            {"name": "Домоуправление №1", "phone": "+7 (495) 555-12-34", "email": "dom1@mail.ru"},
+        ]
+        
+        created_companies = []
+        for data in companies_data:
+            company = Company(**data)
+            db.add(company)
+            created_companies.append(company)
+        
+        await db.commit()
+        
+        for company in created_companies:
+            await db.refresh(company)
+        
+        # Создаем дома
+        houses_data = [
+            {"company_id": created_companies[0].id, "address": "ул. Ленина, д. 10", "apartment_count": 120},
+            {"company_id": created_companies[0].id, "address": "ул. Ленина, д. 12", "apartment_count": 80},
+            {"company_id": created_companies[0].id, "address": "пр. Мира, д. 25", "apartment_count": 200},
+            {"company_id": created_companies[1].id, "address": "ул. Пушкина, д. 5", "apartment_count": 60},
+            {"company_id": created_companies[1].id, "address": "ул. Гагарина, д. 15", "apartment_count": 100},
+            {"company_id": created_companies[2].id, "address": "ул. Советская, д. 1", "apartment_count": 150},
+            {"company_id": created_companies[2].id, "address": "ул. Советская, д. 3", "apartment_count": 150},
+        ]
+        
+        for data in houses_data:
+            db.add(House(**data))
+        
+        await db.commit()
+        
+        # Создаем админа и диспетчера
+        admin = User(
+            telegram_id=100000001,
+            username="uk_admin",
+            first_name="Иван",
+            last_name="Администратор",
+            role=UserRole.ADMIN,
+            company_id=created_companies[0].id
+        )
+        db.add(admin)
+        
+        dispatcher = User(
+            telegram_id=100000002,
+            username="uk_dispatcher",
+            first_name="Мария",
+            last_name="Диспетчер",
+            role=UserRole.DISPATCHER,
+            company_id=created_companies[0].id
+        )
+        db.add(dispatcher)
+        
+        await db.commit()
+        
+        return {
+            "status": "success",
+            "message": "База заполнена тестовыми данными",
+            "created": {
+                "companies": len(companies_data),
+                "houses": len(houses_data),
+                "admin_telegram_id": 100000001,
+                "dispatcher_telegram_id": 100000002
+            }
+        }
+
