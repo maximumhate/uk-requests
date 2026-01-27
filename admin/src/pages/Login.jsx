@@ -14,7 +14,10 @@ export default function Login() {
 
         try {
             const user = await login(telegramId)
-            if (user.role !== 'admin' && user.role !== 'dispatcher' && user.role !== 'super_admin') {
+            console.log('User role:', user.role) // Debug
+            const role = user.role?.toLowerCase()
+
+            if (role !== 'admin' && role !== 'dispatcher' && role !== 'super_admin') {
                 setError(`Доступ разрешён только сотрудникам УК (Ваша роль: ${user.role})`)
             }
         } catch (err) {
@@ -37,7 +40,7 @@ export default function Login() {
                     🏢 Панель управления УК
                 </h1>
                 <p style={{ color: 'var(--text-secondary)', textAlign: 'center', marginBottom: 32 }}>
-                    Вход для сотрудников
+                    Вход для сотрудников <span style={{ opacity: 0.5, fontSize: 10 }}>v1.0.2</span>
                 </p>
 
                 <form onSubmit={handleSubmit}>
