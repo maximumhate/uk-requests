@@ -16,11 +16,12 @@ router = APIRouter(prefix="/superadmin", tags=["Super Admin"])
 
 
 def require_super_admin(user: User = Depends(get_current_user)) -> User:
-    """Require super_admin role"""
-    if user.role != UserRole.SUPER_ADMIN:
+    """Require super_admin role with robust comparison"""
+    role_val = user.role.value if hasattr(user.role, 'value') else str(user.role).lower()
+    if role_val != UserRole.SUPER_ADMIN.value:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Доступ разрешён только супер-администратору"
+            detail=f"Доступ разрешён только супер-администратору (Ваша роль: {role_val})"
         )
     return user
 

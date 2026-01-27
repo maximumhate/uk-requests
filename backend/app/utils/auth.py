@@ -136,10 +136,13 @@ async def get_current_user_optional(
 def require_role(*roles: UserRole):
     """Декоратор для проверки роли пользователя"""
     async def role_checker(user: User = Depends(get_current_user)) -> User:
-        if user.role not in roles:
+        user_role_val = user.role.value if hasattr(user.role, 'value') else str(user.role).lower()
+        allowed_role_vals = [r.value if hasattr(r, 'value') else str(r).lower() for r in roles]
+        
+        if user_role_val not in allowed_role_vals:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Недостаточно прав"
+                detail=f"Недостаточно прав (Ваша роль: {user_role_val})"
             )
         return user
     return role_checker
