@@ -15,7 +15,7 @@ export default function Login() {
         try {
             const user = await login(telegramId)
             if (user.role !== 'admin' && user.role !== 'dispatcher' && user.role !== 'super_admin') {
-                setError('Доступ разрешён только сотрудникам УК')
+                setError(`Доступ разрешён только сотрудникам УК (Ваша роль: ${user.role})`)
             }
         } catch (err) {
             setError(err.message)
