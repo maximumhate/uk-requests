@@ -32,7 +32,7 @@ export function AuthProvider({ children }) {
     const login = async (username, password) => {
         // Для MVP используем простой вход по telegram_id
         try {
-            const response = await api.post('/auth/demo', null, {
+            const response = await api.post('/auth/admin-login', null, {
                 params: { telegram_id: parseInt(username) || 100000001 }
             })
             const { access_token, user } = response.data

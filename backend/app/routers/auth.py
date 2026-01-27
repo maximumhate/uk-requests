@@ -101,6 +101,40 @@ async def auth_demo(
     )
 
 
+@router.post("/admin-login", response_model=TokenResponse)
+async def admin_login(
+    telegram_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Вход для сотрудников УК по Telegram ID
+    Работает только для пользователей с ролью admin или dispatcher
+    """
+    from app.models.user import UserRole
+    
+    result = await db.execute(select(User).where(User.telegram_id == telegram_id))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Пользователь не найден"
+        )
+    
+    if user.role not in [UserRole.ADMIN, UserRole.DISPATCHER]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Доступ разрешён только сотрудникам УК"
+        )
+    
+    access_token = create_access_token({"telegram_id": telegram_id})
+    
+    return TokenResponse(
+        access_token=access_token,
+        user=UserResponse.model_validate(user)
+    )
+
+
 @router.get("/me", response_model=UserResponse)
 async def get_me(user: User = Depends(get_current_user)):
     """Получить текущего пользователя"""
