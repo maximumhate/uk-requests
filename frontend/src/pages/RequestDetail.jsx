@@ -3,6 +3,16 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { requestsApi } from '../api/client'
 import Header from '../components/layout/Header'
+import {
+    Wrench,
+    Zap,
+    Hammer,
+    Sparkles,
+    Bell,
+    ArrowUpDown,
+    Flame,
+    FileText
+} from 'lucide-react'
 
 const STATUS_LABELS = {
     new: 'Новая',
@@ -26,15 +36,17 @@ const CATEGORY_LABELS = {
     other: 'Другое'
 }
 
-const CATEGORY_ICONS = {
-    plumbing: '🔧',
-    electrical: '⚡',
-    repair: '🔨',
-    cleaning: '🧹',
-    intercom: '🔔',
-    elevator: '🛗',
-    heating: '🔥',
-    other: '📋'
+const CategoryIcon = ({ category, size = 24 }) => {
+    switch (category) {
+        case 'plumbing': return <Wrench size={size} />
+        case 'electrical': return <Zap size={size} />
+        case 'repair': return <Hammer size={size} />
+        case 'cleaning': return <Sparkles size={size} />
+        case 'intercom': return <Bell size={size} />
+        case 'elevator': return <ArrowUpDown size={size} />
+        case 'heating': return <Flame size={size} />
+        default: return <FileText size={size} />
+    }
 }
 
 export default function RequestDetail() {
@@ -129,8 +141,8 @@ export default function RequestDetail() {
                 {/* Main Card */}
                 <div className="card" style={{ marginBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
-                        <div className={`category-icon category-${request.category}`} style={{ width: 48, height: 48, fontSize: 24 }}>
-                            {CATEGORY_ICONS[request.category]}
+                        <div className={`category-icon category-${request.category}`} style={{ width: 48, height: 48, fontSize: 24, padding: 10 }}>
+                            <CategoryIcon category={request.category} size={28} />
                         </div>
                         <div>
                             <div className="text-muted" style={{ marginBottom: '4px' }}>

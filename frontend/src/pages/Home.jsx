@@ -2,7 +2,18 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { requestsApi } from '../api/client'
-import Header from '../components/layout/Header'
+import {
+    Wrench,
+    Zap,
+    Hammer,
+    Sparkles,
+    Bell,
+    ArrowUpDown,
+    Flame,
+    FileText,
+    Inbox,
+    Plus
+} from 'lucide-react'
 
 const STATUS_LABELS = {
     new: 'Новая',
@@ -15,15 +26,17 @@ const STATUS_LABELS = {
     cancelled: 'Отменена'
 }
 
-const CATEGORY_ICONS = {
-    plumbing: '🔧',
-    electrical: '⚡',
-    repair: '🔨',
-    cleaning: '🧹',
-    intercom: '🔔',
-    elevator: '🛗',
-    heating: '🔥',
-    other: '📋'
+const CategoryIcon = ({ category, size = 24 }) => {
+    switch (category) {
+        case 'plumbing': return <Wrench size={size} />
+        case 'electrical': return <Zap size={size} />
+        case 'repair': return <Hammer size={size} />
+        case 'cleaning': return <Sparkles size={size} />
+        case 'intercom': return <Bell size={size} />
+        case 'elevator': return <ArrowUpDown size={size} />
+        case 'heating': return <Flame size={size} />
+        default: return <FileText size={size} />
+    }
 }
 
 export default function Home() {
@@ -115,7 +128,9 @@ export default function Home() {
                     </div>
                 ) : requests.length === 0 ? (
                     <div className="empty-state">
-                        <div className="empty-state-icon">📭</div>
+                        <div className="empty-state-icon">
+                            <Inbox size={48} strokeWidth={1} />
+                        </div>
                         <h3 className="empty-state-title">Нет заявок</h3>
                         <p className="empty-state-text">
                             {filter === 'all'
@@ -124,6 +139,7 @@ export default function Home() {
                             }
                         </p>
                         <Link to="/new" className="btn btn-primary">
+                            <Plus size={20} />
                             Создать заявку
                         </Link>
                     </div>
@@ -136,7 +152,7 @@ export default function Home() {
                                 className="list-item"
                             >
                                 <div className={`category-icon category-${request.category}`}>
-                                    {CATEGORY_ICONS[request.category] || '📋'}
+                                    <CategoryIcon category={request.category} size={24} />
                                 </div>
                                 <div className="list-item-content">
                                     <div className="list-item-title">{request.title}</div>

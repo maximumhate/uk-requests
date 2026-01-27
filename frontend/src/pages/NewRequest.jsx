@@ -1,18 +1,28 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { requestsApi } from '../api/client'
 import Header from '../components/layout/Header'
+import {
+    Wrench,
+    Zap,
+    Hammer,
+    Sparkles,
+    Bell,
+    ArrowUpDown,
+    Flame,
+    FileText
+} from 'lucide-react'
 
 const CATEGORIES = [
-    { value: 'plumbing', label: 'Сантехника', icon: '🔧' },
-    { value: 'electrical', label: 'Электрика', icon: '⚡' },
-    { value: 'repair', label: 'Ремонт', icon: '🔨' },
-    { value: 'cleaning', label: 'Уборка', icon: '🧹' },
-    { value: 'intercom', label: 'Домофон', icon: '🔔' },
-    { value: 'elevator', label: 'Лифт', icon: '🛗' },
-    { value: 'heating', label: 'Отопление', icon: '🔥' },
-    { value: 'other', label: 'Другое', icon: '📋' }
+    { value: 'plumbing', label: 'Сантехника', icon: Wrench },
+    { value: 'electrical', label: 'Электрика', icon: Zap },
+    { value: 'repair', label: 'Ремонт', icon: Hammer },
+    { value: 'cleaning', label: 'Уборка', icon: Sparkles },
+    { value: 'intercom', label: 'Домофон', icon: Bell },
+    { value: 'elevator', label: 'Лифт', icon: ArrowUpDown },
+    { value: 'heating', label: 'Отопление', icon: Flame },
+    { value: 'other', label: 'Другое', icon: FileText }
 ]
 
 export default function NewRequest() {
@@ -81,33 +91,38 @@ export default function NewRequest() {
                             gridTemplateColumns: 'repeat(2, 1fr)',
                             gap: '12px'
                         }}>
-                            {CATEGORIES.map(cat => (
-                                <button
-                                    key={cat.value}
-                                    type="button"
-                                    onClick={() => setCategory(cat.value)}
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        padding: '16px',
-                                        background: category === cat.value
-                                            ? 'var(--color-primary-light)'
-                                            : 'var(--bg-input)',
-                                        border: category === cat.value
-                                            ? '2px solid var(--color-primary)'
-                                            : '1px solid var(--border-color)',
-                                        borderRadius: '12px',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.15s ease',
-                                        color: 'var(--text-primary)'
-                                    }}
-                                >
-                                    <span style={{ fontSize: '24px' }}>{cat.icon}</span>
-                                    <span style={{ fontSize: '13px', fontWeight: 500 }}>{cat.label}</span>
-                                </button>
-                            ))}
+                            {CATEGORIES.map(cat => {
+                                const Icon = cat.icon
+                                return (
+                                    <button
+                                        key={cat.value}
+                                        type="button"
+                                        onClick={() => setCategory(cat.value)}
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            padding: '16px',
+                                            background: category === cat.value
+                                                ? 'rgba(99, 102, 241, 0.1)'
+                                                : 'var(--bg-input)',
+                                            border: category === cat.value
+                                                ? '2px solid var(--accent-primary)'
+                                                : '1px solid var(--border-color)',
+                                            borderRadius: '16px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.15s ease',
+                                            color: category === cat.value
+                                                ? 'var(--accent-primary)'
+                                                : 'var(--text-primary)'
+                                        }}
+                                    >
+                                        <Icon size={28} strokeWidth={1.5} />
+                                        <span style={{ fontSize: '13px', fontWeight: 500 }}>{cat.label}</span>
+                                    </button>
+                                )
+                            })}
                         </div>
                     </div>
 
