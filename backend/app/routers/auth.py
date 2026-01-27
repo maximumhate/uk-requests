@@ -121,10 +121,15 @@ async def admin_login(
             detail="Пользователь не найден"
         )
     
-    if user.role not in [UserRole.ADMIN, UserRole.DISPATCHER]:
+    # Разрешаем вход админам, диспетчерам и суперадминам
+    # Приводим к строке и нижнему регистру для надежности (если в БД записано капсом)
+    role_str = str(user.role).lower() if user.role else ""
+    allowed_roles = [r.value for r in [UserRole.ADMIN, UserRole.DISPATCHER, UserRole.SUPER_ADMIN]]
+    
+    if role_str not in allowed_roles:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Доступ разрешён только сотрудникам УК"
+            detail=f"Доступ разрешён только сотрудникам УК (Ваша роль: {user.role})"
         )
     
     access_token = create_access_token({"telegram_id": telegram_id})
