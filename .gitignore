@@ -25,3 +25,7 @@ Thumbs.db
 
 # Docker
 *.log
+
+# Local Logs (Personal)
+CHANGELOG.md
+DEV_LOG.md
