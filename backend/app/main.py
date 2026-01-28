@@ -6,12 +6,14 @@ from app.config import settings
 from app.database import init_db, AsyncSessionLocal
 from app.routers import auth, companies, houses, requests, superadmin
 from app.models import Company, House, User, UserRole
+from app.utils.migration import run_auto_migration
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: создаем таблицы
+    # Startup: создаем таблицы и накатываем миграции
     await init_db()
+    await run_auto_migration()
     yield
     # Shutdown
 
