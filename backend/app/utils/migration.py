@@ -22,11 +22,11 @@ async def run_auto_migration():
         try:
             # Check if value already exists
             result = await conn.fetch(
-                "SELECT enumlabel FROM pg_enum WHERE enumtypid = 'requeststatus'::regtype AND enumlabel = 'cancelled'"
+                "SELECT enumlabel FROM pg_enum WHERE enumtypid = 'requeststatus'::regtype AND enumlabel = 'CANCELLED'"
             )
             if not result:
-                await conn.execute("ALTER TYPE requeststatus ADD VALUE 'cancelled'")
-                print("MIGRATION: 'cancelled' enum value added to requeststatus.")
+                await conn.execute("ALTER TYPE requeststatus ADD VALUE 'CANCELLED'")
+                print("MIGRATION: 'CANCELLED' enum value added to requeststatus.")
             else:
                 print("MIGRATION: 'cancelled' enum value already exists.")
         finally:
