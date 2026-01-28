@@ -258,11 +258,11 @@ async def update_request_status(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Нет доступа к этой заявке"
             )
-        # Жильцы могут только переоткрывать
-        if data.status != RequestStatus.REOPENED:
+        # Жильцы могут только переоткрывать или отменять свои заявки
+        if data.status not in [RequestStatus.REOPENED, RequestStatus.CANCELLED]:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Вы можете только переоткрыть заявку"
+                detail="Вы можете только отменить или переоткрыть заявку"
             )
     
     # Проверка FSM

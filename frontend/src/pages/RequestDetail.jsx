@@ -93,7 +93,12 @@ export default function RequestDetail() {
             })
             loadRequest()
         } catch (err) {
-            alert(err.response?.data?.detail || 'Ошибка')
+            console.error(err)
+            const errorMsg = err.response?.data?.detail || 
+                             (err.response?.data ? JSON.stringify(err.response.data) : null) || 
+                             err.message || 
+                             'Произошла ошибка при отмене заявки';
+            alert(errorMsg)
         }
     }
 
