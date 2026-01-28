@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
 from typing import List, Optional
+import traceback
 
 from app.database import get_db
 from app.models.user import User, UserRole
@@ -287,8 +288,16 @@ async def update_request_status(
     )
     db.add(history)
     
-    await db.commit()
-    await db.refresh(request)
+    try:
+        await db.commit()
+        await db.refresh(request)
+    except Exception as e:
+        print(f"ERROR in update_request_status: {e}")
+        print(traceback.format_exc())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error: {str(e)}"
+        )
     
     return request_to_response(request)
 
