@@ -3,7 +3,7 @@ from app.database import engine
 
 async def run_auto_migration():
     """
-    Automatic migration to fix schema drift (missing columns) on startup.
+    Automatic migration to fix schema drift (missing columns/enum values) on startup.
     Safe to run multiple times. Non-fatal if it fails.
     """
     print("STARTING AUTO-MIGRATION checking...")
@@ -11,12 +11,23 @@ async def run_auto_migration():
     try:
         async with engine.begin() as conn:
             try:
-                # 1. Check/Add address column to companies
+                # 1. Add missing enum value 'cancelled' to requeststatus
+                print("Checking requeststatus enum for 'cancelled' value...")
+                try:
+                    await conn.execute(text("ALTER TYPE requeststatus ADD VALUE IF NOT EXISTS 'cancelled';"))
+                    print("MIGRATION: 'cancelled' enum value added to requeststatus.")
+                except Exception as enum_err:
+                    if "already exists" in str(enum_err).lower():
+                        print("MIGRATION: 'cancelled' enum value already exists.")
+                    else:
+                        print(f"MIGRATION: enum update skipped: {enum_err}")
+                
+                # 2. Check/Add address column to companies
                 print("Checking companies.address...")
                 await conn.execute(text("ALTER TABLE companies ADD COLUMN IF NOT EXISTS address VARCHAR(500);"))
                 print("MIGRATION: 'address' column check/add completed.")
                 
-                # 2. Resize phone column (may fail if already correct size, that's OK)
+                # 3. Resize phone column (may fail if already correct size, that's OK)
                 print("Checking companies.phone...")
                 try:
                     await conn.execute(text("ALTER TABLE companies ALTER COLUMN phone TYPE VARCHAR(255);"))
